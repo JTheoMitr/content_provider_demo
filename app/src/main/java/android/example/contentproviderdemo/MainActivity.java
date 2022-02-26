@@ -10,6 +10,7 @@ import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
@@ -23,7 +24,10 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void btnGetContactPressed(View v) {
-        getPhoneContacts();
+        //getPhoneContacts();
+        Providers providers = new Providers();
+        providers.logItUp();
+        getPhoneCallLogs();
     }
 
     private void getPhoneContacts() {
@@ -46,4 +50,27 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    private void getPhoneCallLogs() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.READ_CALL_LOG}, 0);
+        }
+
+        ContentResolver contentResolver = getContentResolver();
+        Uri uri = CallLog.Calls.CONTENT_URI;
+        Cursor cursor = contentResolver.query(uri, null, null, null, null);
+
+        Log.i("CONTACT_PROVIDER_DEMO", "TOTAL # of Calls: " + Integer.toString(cursor.getCount()));
+        if (cursor.getCount() > 0) {
+            while (cursor.moveToNext()) {
+                String callType = cursor.getString(cursor.getColumnIndexOrThrow(CallLog.Calls.TYPE));
+                String contactNumber = cursor.getString(cursor.getColumnIndexOrThrow(CallLog.Calls.NUMBER));
+
+                Log.i("CONTACT_PROVIDER_DEMO", "Call Type: " + callType + ", Associated Number " + contactNumber);
+            }
+        }
+    }
+
+
 }
