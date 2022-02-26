@@ -6,34 +6,20 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.content.ContentResolver;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.CallLog;
 import android.provider.ContactsContract;
 import android.util.Log;
-import android.view.View;
 
-public class MainActivity extends AppCompatActivity {
+public class Contacts extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-    }
-
-    public void btnGetContactPressed(View v) {
-        Intent myIntent = new Intent(this, Contacts.class);
-        //myIntent.putExtra("key", value); //Optional parameters
-        this.startActivity(myIntent);
-    }
-
-
-    public void btnGetCallLogPressed(View view) {
-
+        setContentView(R.layout.activity_contacts);
+        getPhoneContacts();
     }
 
     private void getPhoneContacts() {
@@ -53,27 +39,6 @@ public class MainActivity extends AppCompatActivity {
                 String contactNumber = cursor.getString(cursor.getColumnIndexOrThrow(ContactsContract.CommonDataKinds.Phone.NUMBER));
 
                 Log.i("CONTACT_PROVIDER_DEMO", "Contact Name: " + contactName + "Phone : " + contactNumber);
-            }
-        }
-    }
-
-    private void getPhoneCallLogs() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_CALL_LOG)
-                != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[] {Manifest.permission.READ_CALL_LOG}, 0);
-        }
-
-        ContentResolver contentResolver = getContentResolver();
-        Uri uri = CallLog.Calls.CONTENT_URI;
-        Cursor cursor = contentResolver.query(uri, null, null, null, null);
-
-        Log.i("CONTACT_PROVIDER_DEMO", "TOTAL # of Calls: " + Integer.toString(cursor.getCount()));
-        if (cursor.getCount() > 0) {
-            while (cursor.moveToNext()) {
-                String callType = cursor.getString(cursor.getColumnIndexOrThrow(CallLog.Calls.TYPE));
-                String contactNumber = cursor.getString(cursor.getColumnIndexOrThrow(CallLog.Calls.NUMBER));
-
-                Log.i("CONTACT_PROVIDER_DEMO", "Call Type: " + callType + ", Associated Number " + contactNumber);
             }
         }
     }
